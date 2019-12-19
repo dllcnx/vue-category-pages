@@ -1,8 +1,9 @@
 var fs = require('fs')
 const glob = require('glob')
+const config = require('../vue.config.js')
 
-// 需要保持和vue.config.js的publicPath保持一致
-const publicPath = ''
+const publicPath = config.publicPath || ''
+const outputDir = config.outputDir || 'dist'
 /**
  * js文件copy
  * @param src
@@ -23,9 +24,9 @@ var callbackFileJs = function (src, dst) {
       }
       if (dst.includes('.map')) {
         // let srcName = src.split('/')[4]
-        // fs.unlink(`./dist/js/${srcName}.map`,function () { // 删除map
+        // fs.unlink(`./${outputDir}/js/${srcName}.map`,function () { // 删除map
         // })
-        // fs.unlink(`./dist/js/${srcName}`,function () { // 删除js
+        // fs.unlink(`./${outputDir}/js/${srcName}`,function () { // 删除js
         // })
       } else { // JS写入成功
         callbackFileJs(dst, `${dst}.map`)
@@ -34,12 +35,12 @@ var callbackFileJs = function (src, dst) {
   })
 }
 // 复制目录
-glob.sync('./dist/js/*.js').forEach((filepath, name) => {
+glob.sync(`./${outputDir}/js/*.js`).forEach((filepath, name) => {
   let fileNameList = filepath.split('.')
   let fileName = fileNameList[1].split('/')[3]// 多页面页面目录
   let copyName = filepath.split('/')[3]
-  let changeDirectory = `./dist/${fileName}/js`// 多页面JS文件地存放址
-  if (!fileName.includes('chunk-vendors')) {
+  let changeDirectory = `./${outputDir}/${fileName}/js`// 多页面JS文件地存放址
+  if (!fileName.includes('chunk-')) {
     // eslint-disable-next-line
     fs.exists(changeDirectory, function (exists) {
       if (exists) {
@@ -81,12 +82,12 @@ var callbackFileCss = function (src, dst) {
   })
 }
 // 复制目录
-glob.sync('./dist/css/*.css').forEach((filepath, name) => {
+glob.sync(`./${outputDir}/css/*.css`).forEach((filepath, name) => {
   let fileNameList = filepath.split('.')
   let fileName = fileNameList[1].split('/')[3]// 多页面页面目录
   let copyName = filepath.split('/')[3]
-  let changeDirectory = `./dist/${fileName}/css`// 多页面JS文件地存放址
-  if (!fileName.includes('chunk-vendors')) {
+  let changeDirectory = `./${outputDir}/${fileName}/css`// 多页面JS文件地存放址
+  if (!fileName.includes('chunk-')) {
     /* eslint-disable-next-line */
     fs.exists(changeDirectory, function (exists) {
       if (exists) {
@@ -108,7 +109,15 @@ glob.sync('./dist/css/*.css').forEach((filepath, name) => {
  * @param dst
  */
 var callbackFile = function (src, dst, name, filepath) {
-  const pt = publicPath && publicPath !== '/' ? '/' + publicPath : ''
+  const index = publicPath.lastIndexOf('/')
+  let pt = publicPath
+  if (index !== -1) {
+    const count = publicPath.length
+    if (index + 1 === count) {
+      pt = publicPath.slice(0, index - 1)
+    }
+  }
+
   fs.readFile(src, 'utf8', function (error, data) {
     if (error) {
       // eslint-disable-next-line no-console
@@ -138,12 +147,12 @@ var callbackFile = function (src, dst, name, filepath) {
   })
 }
 // 复制目录
-glob.sync('./dist/js/*.js').forEach((filepath, name) => {
+glob.sync(`./${outputDir}/js/*.js`).forEach((filepath, name) => {
   let fileNameList = filepath.split('.')
   let fileName = fileNameList[1].split('/')[3]// 多页面页面目录
-  let thisDirectory = `./dist/${fileName}/${fileName}.html`// 多页面JS文件地存放址
-  let changeDirectory = `./dist/${fileName}/index.html`// 多页面JS文件地存放址
-  if (!fileName.includes('chunk-vendors')) {
+  let thisDirectory = `./${outputDir}/${fileName}/${fileName}.html`// 多页面JS文件地存放址
+  let changeDirectory = `./${outputDir}/${fileName}/index.html`// 多页面JS文件地存放址
+  if (!fileName.includes('chunk-')) {
     callbackFile(thisDirectory, changeDirectory, fileName, filepath)
   }
 })

@@ -22,8 +22,4 @@ npm run build-s  分离多页面编译,所有独有资源分离存放
 
 
 注意事项:
-
-在build-s分离编译模式下,如果要添加发布路径.需要修改两个地方:
-
-1. vue.config.js里面的publicPath.
-2. script里面splitBuild.js里面的publicPath变量(不加前后/).
+在build-s分离编译模式下,不支持publicPath的'./'和''配置(资源路径会出现问题).
