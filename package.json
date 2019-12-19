@@ -2,6 +2,7 @@
   "name": "vue-category-pages",
   "version": "0.1.0",
   "private": true,
+  "author": "KeiferJu <jkf19980216@163.com> (myllcn.com)",
   "scripts": {
     "serve": "vue-cli-service serve --open ",
     "build-s": "vue-cli-service build --mode ps && node script/splitBuild.js",
